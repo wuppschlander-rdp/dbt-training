@@ -1,0 +1,47 @@
+version: 2
+
+sources:
+  - name: jaffle_shop
+    database: raw
+    schema: jaffle_shop
+    tables:
+      - name: customers
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+
+          - name: first_name
+            tests:
+              - not_null
+
+          - name: last_name
+      
+      - name: orders
+        loaded_at_field: _etl_loaded_at
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+
+          - name: user_id
+            tests:
+              - not_null
+              - relationships:
+                  field: id
+                  to: source('jaffle_shop', 'customers')
+
+          - name: order_date
+          - name: status
+            tests:
+              - accepted_values:
+                  values:
+                    - completed
+                    - shipped
+                    - returned
+                    - return_pending
+                    - placed
+
+          - name: _etl_loaded_at

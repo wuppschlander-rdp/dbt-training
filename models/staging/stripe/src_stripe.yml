@@ -1,0 +1,32 @@
+version: 2
+
+sources:
+  - name: stripe
+    database: raw
+    schema: stripe
+    tables:
+      - name: payment
+        loaded_at_field: _batched_at
+        columns:
+          - name: id
+            tests:
+              - unique:
+                  config:
+                    enabled: true
+                    tags: ["primary-key-test", "source-test"]
+                    where: "id is not null"
+                    limit: 150
+                    severity: error
+                    error_if: ">100"
+                    warn_if: ">10"
+                    store_failures: true
+                    database: analytics
+                    schema: tests
+                    alias: stripe__payment_duplicate_primary_key
+
+          - name: orderid
+          - name: paymentmethod
+          - name: status
+          - name: amount
+          - name: created
+          - name: _batched_at
