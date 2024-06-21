@@ -1,0 +1,72 @@
+semantic_models:
+  - name: orders
+    model: ref('fct_orders_alt')
+    defaults:
+      agg_time_dimension: ordered_at
+    entities:
+      - name: order_id
+        type: primary
+        expr: order_id
+      - name: location_id
+        type: foreign
+        expr: location_id
+      - name: customer_id
+        type: foreign
+        expr: customer_id
+    dimensions:
+      - name: ordered_at
+        type: time
+        expr: date_trunc(day, ordered_at)
+        type_params:
+          time_granularity: day
+      - name: is_food_order
+        type: categorical
+        expr: is_food_order
+      - name: is_drink_order
+        type: categorical
+        expr: is_drink_order
+    measures:
+      - name: min_order_value
+        agg: min
+        expr: order_total
+      - name: order_count
+        agg: sum
+        expr: 1
+      - name: order_total
+        agg: sum
+        expr: order_total
+      - name: order_cost
+        agg: sum
+        expr: order_cost
+
+metrics:
+  - name: order_count
+    description: The number of orders placed
+    label: order_count
+    type: simple
+    type_params:
+      measure:
+        name: order_count
+  - name: order_total
+    label: order_total
+    type: simple
+    type_params:
+      measure: 
+        name: order_total
+  - name: order_cost
+    label: order_cost
+    type: simple
+    type_params:
+      measure:
+        name: order_cost
+  - name: order_gross_profit
+    description: Gross profit from each order
+    label: order_gross_profit
+    type: derived
+    type_params:
+      expr: revenue - cost
+      metrics:
+        - name: order_total
+          alias: revenue
+        - name: order_cost
+          alias: cost

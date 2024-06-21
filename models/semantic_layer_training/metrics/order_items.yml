@@ -1,0 +1,32 @@
+semantic_models:
+  - name: order_items
+    model: ref('order_items')
+    defaults:
+      agg_time_dimension: ordered_at
+    entities:
+      - name: order_item_id
+        type: primary
+        expr: order_item_id
+      - name: order_id
+        type: foreign
+        expr: order_id
+      - name: product_id
+        type: foreign
+        expr: product_id
+    dimensions:
+      - name: is_drink_item
+        type: categorical
+        expr: is_drink_item
+      - name: is_food_item
+        type: categorical
+        expr: is_food_item
+      - name: ordered_at
+        type: time
+        expr: date_trunc(day, ordered_at)
+        type_params:
+          time_granularity: day
+    measures:
+      - name: median_revenue
+        description: the median revenue generated for each order item
+        agg: median
+        expr: product_price
