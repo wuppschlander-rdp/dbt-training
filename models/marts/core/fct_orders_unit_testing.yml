@@ -1,0 +1,20 @@
+unit_tests:
+  - name: fct_orders_happy_path
+    model: fct_orders
+    given:
+      - input: ref('stg_stripe__payment')
+        format: dict
+        rows:
+          - {order_id: 1, amount: 10.0, status: 'success'}
+          - {order_id: 1, amount: 15.5, status: 'success'}
+          - {order_id: 2, amount: 20.0, status: 'success'}
+      - input: ref('stg_jaffle_shop__orders')
+        format: dict
+        rows:
+          - {order_id: 1, customer_id: 1, order_date: '2020-01-01'}
+          - {order_id: 2, customer_id: 2, order_date: '2020-01-02'}
+    expect:
+      format: dict
+      rows:
+        - {order_id: 1, customer_id: 1, order_date: '2020-01-01', amount: 25.5}
+        - {order_id: 2, customer_id: 2, order_date: '2020-01-02', amount: 20.0}
