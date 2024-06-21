@@ -1,0 +1,14 @@
+semantic_models:
+  - name: customers
+    model: ref('dim_customers_alt')
+    defaults:
+      agg_time_dimension: last_ordered_at
+    entities:
+      - name: customer
+        type: primary
+        expr: customer_id
+    dimensions:
+      - name: last_ordered_at
+        type: time
+        type_params:
+          time_granularity: day
